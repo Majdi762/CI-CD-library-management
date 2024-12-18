@@ -8,18 +8,21 @@ import com.library.model.Student;
 import com.library.model.Borrow;
 
 import java.util.Date;
+import java.util.List;
 
 public class BorrowService {
 
     private BorrowDAO borrowDAO;
+    private BookDAO bookDAO;
+    private StudentDAO studentDAO;
 
     public BorrowService(BorrowDAO borrowDAO) {
         this.borrowDAO = borrowDAO;
     }
 
     public String borrowBook(int studentId, int bookId) {
-        Student student = findStudentById(studentId);
-        Book book = findBookById(bookId);
+        Student student = studentDAO.getStudentById(studentId);
+        Book book = bookDAO.getBookById(bookId);
 
         if (student == null || book == null) {
             return "Étudiant ou livre non trouvé.";
@@ -31,9 +34,10 @@ public class BorrowService {
 
         Borrow borrow = new Borrow(0, student, book, new Date(), null);
         borrowDAO.save(borrow);
-        book.setAvailable(false);  // Mark the book as not available after borrowing
+        book.setAvailable(false);  // Marquer le livre comme non disponible après l'emprunt
         return "Livre emprunté avec succès!";
     }
+
 
     public String returnBook(int studentId, int bookId) {
         Borrow borrow = findBorrowByStudentAndBook(studentId, bookId);
@@ -50,22 +54,22 @@ public class BorrowService {
         return "Livre retourné avec succès!";
     }
 
-    public void displayBorrows() {
-        // Logic to display borrows
+    public List<Borrow> displayBorrows() {
+        return borrowDAO.getAllBorrows();
     }
 
-    private Student findStudentById(int studentId) {
+    public Student findStudentById(int studentId) {
         // Logic to find a student by ID
-        return null;
+        return borrowDAO.getStudentById(studentId);
     }
 
     private Book findBookById(int bookId) {
         // Logic to find a book by ID
-        return null;
+        return bookDAO.getBookById(bookId);
     }
 
     private Borrow findBorrowByStudentAndBook(int studentId, int bookId) {
         // Logic to find borrow by student and book
-        return null;
+        return borrowDAO.findBorrowByStudentAndBook(studentId, bookId);
     }
 }

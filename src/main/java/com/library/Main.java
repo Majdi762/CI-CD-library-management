@@ -88,7 +88,7 @@ public class Main {
                     break;
 
                 case 6:
-                    borrowService.displayBorrows();
+                    System.out.println(borrowService.displayBorrows());
                     break;
 
                 case 7:

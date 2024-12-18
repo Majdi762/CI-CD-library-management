@@ -19,6 +19,15 @@ public class Book {
         this.isbn = isbn;
         this.publishedYear = publishedYear;
     }
+    // Constructeur complet
+    public Book(String title, String author, String isbn, int publishedYear, boolean available) {
+        this.title = title;
+        this.author = author;
+        this.isbn = isbn;
+        this.publishedYear = publishedYear;
+        this.available = available;
+    }
+
 
     // Getters et Setters
     public int getId() {
@@ -71,6 +80,13 @@ public class Book {
 
     @Override
     public String toString() {
-        return "Book{id=" + id + ", title='" + title + "', author='" + author + "', isbn='" + isbn + "', publishedYear=" + publishedYear + "}";
+        return "Book{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", isbn='" + isbn + '\'' +
+                ", publishedYear=" + publishedYear +
+                ", available=" + available +
+                '}';
     }
 }

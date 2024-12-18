@@ -22,7 +22,7 @@ class BookServiceTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this); // Initialise les mocks
+        MockitoAnnotations.openMocks(this);// Initialise les mocks
     }
 
     @Test

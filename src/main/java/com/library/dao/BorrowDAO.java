@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BorrowDAO {
+    private StudentDAO studentDAO;
 
     public List<Borrow> getAllBorrows() {
         List<Borrow> borrows = new ArrayList<>();
@@ -38,13 +39,30 @@ public class BorrowDAO {
     }
 
     private Book getBookById(int bookId) {
-        // Logic to fetch book by ID from the database
+        String query = "SELECT * FROM books WHERE id = ?";
+        try (Connection connection = DbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, bookId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Book(
+                            rs.getString("title"),
+                            rs.getString("author"),
+                            rs.getString("isbn"),
+                            rs.getInt("year")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
-    private Student getStudentById(int studentId) {
+
+    public Student getStudentById(int studentId) {
         // Logic to fetch student by ID from the database
-        return null;
+        return studentDAO.getStudentById(studentId);
     }
 
     public void save(Borrow borrow) {
@@ -60,4 +78,31 @@ public class BorrowDAO {
             e.printStackTrace();
         }
     }
+
+    public Borrow findBorrowByStudentAndBook(int studentId, int bookId) {
+        String query = "SELECT * FROM borrows WHERE student_id = ? AND book_id = ? AND return_date IS NULL"; // Le livre doit être emprunté, donc return_date est NULL
+        try (Connection connection = DbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, studentId);
+            stmt.setInt(2, bookId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Book book = getBookById(rs.getInt("book_id"));
+                    Student student = getStudentById(rs.getInt("student_id"));
+                    return new Borrow(
+                            rs.getInt("id"),
+                            student,
+                            book,
+                            rs.getDate("borrow_date"),
+                            rs.getDate("return_date")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Retourne null si aucun emprunt n'est trouvé
+    }
+
 }
