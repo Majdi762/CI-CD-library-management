@@ -32,16 +32,23 @@ pipeline {
             }
         }
     }
-    post {
-        success {
-            emailext to: 'majdizeinab1@gmail.com',
-                subject: 'Build Success',
-                body: 'Le build a été complété avec succès.'
-        }
-        failure {
-            emailext to: 'majdizeinab1@gmail.com',
-                subject: 'Build Failed',
-                body: 'Le build a échoué.'
-        }
-    }
+ post {
+     success {
+         emailext(
+             to: 'majdizeinab1@gmail.com',
+             subject: 'Build Success',
+             body: 'Le build a été complété avec succès.',
+             from: 'majdizeinab1@gmail.com'
+         )
+     }
+     failure {
+         emailext(
+             to: 'majdizeinab1@gmail.com',
+             subject: 'Build Failed',
+             body: 'Le build a échoué.',
+             from: 'majdizeinab1@gmail.com'
+         )
+     }
+ }
+
 }
