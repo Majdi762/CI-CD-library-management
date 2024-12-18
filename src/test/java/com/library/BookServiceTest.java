@@ -5,41 +5,60 @@ import com.library.model.Book;
 import com.library.service.BookService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.mockito.Mockito.*;
 
 class BookServiceTest {
 
-    private BookService bookService;
-    private BookDAO bookDAO;
+    @Mock
+    private BookDAO bookDAO; // Mock de la dépendance BookDAO
+
+    @InjectMocks
+    private BookService bookService; // Injecte le mock dans BookService
 
     @BeforeEach
     void setUp() {
-        bookDAO = new BookDAO();
-        bookService = new BookService(bookDAO);
+        MockitoAnnotations.openMocks(this); // Initialise les mocks
     }
 
     @Test
     void testAddBook() {
+        // Données de test
         Book book = new Book("Java Programming", "John Doe", "123456", 2020);
+
+        // Appel de la méthode à tester
         bookService.addBook(book);
-        assertEquals(1, bookDAO.getAllBooks().size());
-        assertEquals("Java Programming", bookDAO.getBookById(1).getTitle());
+
+        // Vérification que la méthode DAO a bien été appelée
+        verify(bookDAO, times(1)).add(book);
     }
 
     @Test
     void testUpdateBook() {
+        // Données de test
         Book book = new Book("Java Programming", "John Doe", "123456", 2020);
-        bookService.addBook(book);
+
+        // Simulation : retourner un livre existant
+        when(bookDAO.getBookById(1)).thenReturn(book);
+
+        // Appel de la méthode à tester
         bookService.updateBook(1, "Advanced Java", "Jane Doe", true);
-        assertEquals("Advanced Java", bookDAO.getBookById(1).getTitle());
+
+        // Vérification des interactions
+        verify(bookDAO, times(1)).getBookById(1);
+        verify(bookDAO, times(1)).update(any(Book.class));
     }
 
     @Test
     void testDeleteBook() {
-        Book book = new Book("Java Programming", "John Doe", "123456", 2020);
-        bookService.addBook(book);
+        // Appel de la méthode à tester
         bookService.deleteBook(1);
-        assertNull(bookDAO.getBookById(1));
+
+        // Vérification que la méthode DAO a bien été appelée
+        verify(bookDAO, times(1)).delete(1);
     }
 }

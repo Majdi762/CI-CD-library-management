@@ -42,10 +42,4 @@ public class StudentService {
         }
         return null;
     }
-
-    public void deleteStudent(int i) {
-    }
-
-    public void updateStudent(Student student) {
-    }
 }
