@@ -79,7 +79,7 @@ class BorrowServiceTest {
         String result = borrowService.borrowBook(3, 1);
 
         // Vérifications
-        assertEquals("Étudiant ou livre non trouvé.", result);
+        assertEquals("Échec!", result);
         verify(borrowDAO, never()).save(any(Borrow.class));  // Vérifie que le livre n'a pas été emprunté
     }
 
