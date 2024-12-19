@@ -15,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Date;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -80,5 +82,60 @@ class BorrowServiceTest {
         assertEquals("Étudiant ou livre non trouvé.", result);
         verify(borrowDAO, never()).save(any(Borrow.class));  // Vérifie que le livre n'a pas été emprunté
     }
+
+    @Test
+    void testBorrowBookSuccess() {
+        // Mock des données
+        Student student = new Student("Alice");
+        student.setId(1);
+        Book book = new Book("Java Programming", "John Doe", "g1245", 2002, true);
+        book.setId(1);
+
+        // Comportement des mocks
+        when(studentDAO.getStudentById(1)).thenReturn(student);
+        when(bookDAO.getBookById(1)).thenReturn(book);
+
+        // Appel de la méthode à tester
+        String result = borrowService.borrowBook(1, 1);
+
+        // Vérifications
+        assertEquals("Livre emprunté avec succès!", result);
+
+        // Vérifie que le livre a été enregistré dans la table des emprunts
+        verify(borrowDAO, times(1)).save(any(Borrow.class));
+
+        // Vérifie que la disponibilité du livre a été mise à jour
+        assertEquals(false, book.isAvailable());
+    }
+
+
+    @Test
+    void testReturnBookSuccess() {
+        // Mock des données
+        Student student = new Student("Alice");
+        student.setId(1);
+        Book book = new Book("Java Programming", "John Doe", "g1245", 2002, false);
+        book.setId(1);
+        Borrow borrow = new Borrow(1, student, book, new Date(), null);
+
+        // Comportement des mocks
+        when(borrowDAO.findBorrowByStudentAndBook(1, 1)).thenReturn(borrow);
+
+        // Appel de la méthode à tester
+        String result = borrowService.returnBook(1, 1);
+
+        // Vérifications
+        assertEquals("Livre retourné avec succès!", result);
+
+        // Vérifie que la date de retour a été définie
+        assertEquals(new Date().getTime(), borrow.getReturnDate().getTime(), 1000); // Tolérance de 1 seconde
+
+        // Vérifie que le livre est marqué comme disponible
+        assertEquals(true, book.isAvailable());
+
+        // Vérifie que les DAO ont été appelés correctement
+        verify(borrowDAO, times(1)).save(borrow);
+    }
+
 
 }
