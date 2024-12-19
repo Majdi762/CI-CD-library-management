@@ -55,10 +55,15 @@ class BookServiceTest {
 
     @Test
     void testDeleteBook() {
+        // Simuler que le livre existe
+        Book book = new Book("Java Programming", "John Doe", "123456", 2020);
+        when(bookDAO.getBookById(1)).thenReturn(book);
+
         // Appel de la méthode à tester
         bookService.deleteBook(1);
 
-        // Vérification que la méthode DAO a bien été appelée
+        // Vérification que la méthode DAO delete a été appelée
         verify(bookDAO, times(1)).delete(1);
     }
+
 }
